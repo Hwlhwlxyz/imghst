@@ -23,3 +23,6 @@ htmlcov/
 *,cover
 
 /venv/
+
+/data/images/
+/data/database.db

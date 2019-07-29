@@ -1,8 +1,14 @@
 CREATE TABLE user (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL
 );
 
 INSERT INTO user (username,password)
-VALUES ('user1','ps1' );
+VALUES ('user1','ps1');
+
+CREATE TABLE image (
+  name TEXT UNIQUE NOT NULL
+);
+
+INSERT INTO image
+VALUES ('testtest.jpg');
