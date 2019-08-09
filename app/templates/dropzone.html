@@ -1,0 +1,58 @@
+<!-- Load Dropzone -->
+<script src="/static/js/dropzone.js"></script>
+<link href="/static/css/dropzone.css" rel="stylesheet" type="text/css" />
+
+
+
+<!doctype html>
+
+
+<button id="submit-all">Submit all files</button>
+<form action="/uploadbydropzone" class="dropzone" id="my-dropzone"></form>
+
+<script>
+    Dropzone.options.myDropzone = {
+
+  // Prevents Dropzone from uploading dropped files immediately
+  autoProcessQueue: false,
+  addRemoveLinks: true,
+  uploadMultiple: true,
+  parallelUploads: 10,
+  init: function() {
+    var submitButton = document.querySelector("#submit-all")
+        myDropzone = this; // closure
+
+    submitButton.addEventListener("click", function() {
+      myDropzone.processQueue(); // Tell Dropzone to process all queued files.
+    });
+
+    this.on("processing", function(){
+        this.options.autoProcessQueue = true;
+    });
+
+    this.on("success", function() {
+      //console.log("success");
+    });
+
+
+      this.on("queuecomplete", function() {
+      console.log("queuecomplete");
+
+      setTimeout(function () {
+          console.log("after complete")
+          //window.location.href='/image';
+          var oli=document.createElement("li");
+          oli.innerHTML='test';
+      }, 1000);
+    });
+
+    // You might want to show the submit button only when
+    // files are dropped here:
+    this.on("addedfile", function() {
+      // Show submit button here and/or inform user to click it.
+    });
+
+  }
+};
+
+</script>

@@ -41,7 +41,7 @@ def make_dicts(cursor, row):
 
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
-    if query.startswith('INSERT') or query.startswith('insert'):
+    if query.startswith('INSERT') or query.startswith('UPDATE') or query.startswith('insert') or query.startswith('update'):
         get_db().commit()
     rv = [dict((cur.description[idx][0], value)
                for idx, value in enumerate(row)) for row in cur.fetchall()]

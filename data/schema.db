@@ -3,12 +3,8 @@ CREATE TABLE user (
   password TEXT NOT NULL
 );
 
-INSERT INTO user (username,password)
-VALUES ('user1','ps1');
 
 CREATE TABLE image (
   name TEXT UNIQUE NOT NULL
 );
 
-INSERT INTO image
-VALUES ('testtest.jpg');

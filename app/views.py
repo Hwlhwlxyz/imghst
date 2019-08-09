@@ -8,9 +8,7 @@ from . import models
 @app.route('/')
 @app.route('/index')
 def index():
-    user = {'name': 'user1'}  # fake user
-    return render_template("index.html",
-                           user=user)
+    return render_template("index.html")
 
 @app.route('/u')
 def user():
@@ -31,6 +29,16 @@ def upload():
         print(filename)
     return render_template('upload.html')
 
+
+@app.route('/uploadbydropzone', methods=['POST', 'GET'])
+def dropzoneupload():
+    print(request.files)
+    if request.method == 'POST':
+        for f in request.files.getlist('file'):
+            print(f.filename)
+    return render_template('dropzone.html')
+
+
 @app.route('/image/<imgname>')
 def return_img_stream(imgname):
     resp = Response(models.Image(models.Image.find_by_name(imgname).name).get_img(), mimetype="image/jpeg")
@@ -41,3 +49,7 @@ def get_images():
     data = models.Image.get_all()
     return jsonify(data)
 
+@app.route('/showimages')
+def show_images():
+    images = models.Image.get_all()
+    return render_template('images.html', images=images)
