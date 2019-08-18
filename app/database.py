@@ -45,6 +45,7 @@ def query_db(query, args=(), one=False):
         get_db().commit()
     rv = [dict((cur.description[idx][0], value)
                for idx, value in enumerate(row)) for row in cur.fetchall()]
+    print((rv[0] if rv else None) if one else rv)
     return (rv[0] if rv else None) if one else rv
 
 
@@ -55,6 +56,7 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
+# flask init-db
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
@@ -64,3 +66,5 @@ def init_db_command():
 
     init_db()
     click.echo('Initialized the database.')
+
+

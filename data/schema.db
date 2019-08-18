@@ -1,10 +1,14 @@
 CREATE TABLE user (
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL
 );
 
 
 CREATE TABLE image (
-  name TEXT UNIQUE NOT NULL
+  name TEXT UNIQUE NOT NULL,
+  userid INT,
+  describe TEXT,
+  time timestamp not null default CURRENT_TIMESTAMP
 );
 

@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
 
-<img src="http://localhost:5000/image/496BAD0CDB4D1ED0F4E076AA5A064B1F.gif" alt="图片" class="img-responsive">
-<img src="{{ url_for('return_img_stream', imgname='496BAD0CDB4D1ED0F4E076AA5A064B1F.gif') }}" alt="图片" class="img-responsive">
+{% extends 'navigator.html' %}
+{% block body_part %}
 
-{% for image in images %}
-{{ image }}
-{{ image['name'] }}
-    <img src="{{ url_for('return_img_stream', imgname=image['name']) }}" alt="图片" class="img-responsive">
-{% endfor %}
+    <body>
+    {% for image in images %}
+        <img src="{{ url_for('return_img_stream', imgname=image['name']) }}" alt="{{ image['name'] }}"
+             height="200" width="200" class="img-responsive">
 
-<body>
+    {% endfor %}
+    </body>
 
-</body>
+
+{% endblock %}
 </html>
 

@@ -1,58 +1,74 @@
 <!-- Load Dropzone -->
 <script src="/static/js/dropzone.js"></script>
-<link href="/static/css/dropzone.css" rel="stylesheet" type="text/css" />
-
+<link href="/static/css/dropzone.css" rel="stylesheet" type="text/css"/>
 
 
 <!doctype html>
 
+{% extends 'navigator.html' %}
+{% block body_part %}
 
-<button id="submit-all">Submit all files</button>
-<form action="/uploadbydropzone" class="dropzone" id="my-dropzone"></form>
 
+    <form action="/uploadbydropzone" class="dropzone" id="my-dropzone" name="image[]"
+          enctype=multipart/form-data></form>
+
+    <button type="button" class="btn btn-primary" id="submit-all">Submit</button>
 <script>
     Dropzone.options.myDropzone = {
 
-  // Prevents Dropzone from uploading dropped files immediately
-  autoProcessQueue: false,
-  addRemoveLinks: true,
-  uploadMultiple: true,
-  parallelUploads: 10,
-  init: function() {
-    var submitButton = document.querySelector("#submit-all")
-        myDropzone = this; // closure
+            // Prevents Dropzone from uploading dropped files immediately
+            acceptedFiles: "image/*",
+            autoProcessQueue: false,
+            addRemoveLinks: true,
+            uploadMultiple: true,
+            parallelUploads: 10,
+            init: function () {
 
-    submitButton.addEventListener("click", function() {
-      myDropzone.processQueue(); // Tell Dropzone to process all queued files.
-    });
+                var submitButton = document.querySelector("#submit-all");
+                myDropzone = this; // closure
+                var count = 0;
+                submitButton.addEventListener("click", function () {
+                    myDropzone.processQueue(); // Tell Dropzone to process all queued files.
+                });
 
-    this.on("processing", function(){
-        this.options.autoProcessQueue = true;
-    });
+                this.on("processing", function (file) {
+                    //upload all images
+                    this.options.autoProcessQueue = true;
 
-    this.on("success", function() {
-      //console.log("success");
-    });
+                    //delete removeLink after upload completed
+                    file._removeLink.remove();
+                    delete file._removeLink;
+                });
+
+                this.on("success", function () {
+                    //console.log("success");
+                    //function(file) { file._removeLink.remove(); delete file._removeLink; }
+                });
 
 
-      this.on("queuecomplete", function() {
-      console.log("queuecomplete");
+                this.on("queuecomplete", function () {
+                    console.log("queuecomplete");
+                    this.options.autoProcessQueue = true;
 
-      setTimeout(function () {
-          console.log("after complete")
-          //window.location.href='/image';
-          var oli=document.createElement("li");
-          oli.innerHTML='test';
-      }, 1000);
-    });
+                    myDropzone.options.addRemoveLinks = false;
+                    myDropzone.removeEventListeners();
 
-    // You might want to show the submit button only when
-    // files are dropped here:
-    this.on("addedfile", function() {
-      // Show submit button here and/or inform user to click it.
-    });
+                    setTimeout(function () {
+                        console.log("after complete")
+                        //window.location.href='showimagesofuser';
+                        window.location.href='showimagesofuser';
+                        console.log(myDropzone.getAcceptedFiles())
 
-  }
-};
+                        //
+                        // var currentBtn = document.getElementById("submit-all");
+                        //     currentBtn.style.display = "none";
+                    }, 2000);
+                });
 
-</script>
+
+            }
+        };
+    </script>
+
+
+{% endblock %}
