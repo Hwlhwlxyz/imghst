@@ -6,9 +6,31 @@
 
     <body>
     {% for image in images %}
-        <img src="{{ url_for('return_img_stream', imgname=image['name']) }}" alt="{{ image['name'] }}"
-             height="200" width="200" class="img-responsive">
+        {#        <img src="{{ url_for('return_img_stream', imgname=image['name']) }}" alt="{{ image['name'] }}"#}
+        {#             height="200" width="200" class="img-responsive">#}
 
+
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+
+                <img class="card-img-top" src="{{ url_for('return_img_stream', imgname=image['name']) }}"
+                     alt="{{ image['name'] }}">
+                <h5 class="card-title">{{ image['name'] }}</h5>
+                {# <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>#}
+
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                    card's content.</p>
+                <form action="{{ url_for('updatename', imgname=image['name']) }}" method="post">
+                    <div class="form-group">
+                        <label for="input-name">edit name</label>
+                        <input type="text" required id="input-name" class="form-control" name="newname">
+                    </div>
+                    <button type="submit" class="btn btn-default">submit</button>
+                </form>
+
+                <a href="{{ url_for('delete', imgname=image['name']) }}" class="card-link">delete</a>
+            </div>
+        </div>
     {% endfor %}
     </body>
 

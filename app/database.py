@@ -39,10 +39,11 @@ def make_dicts(cursor, row):
     return dict((cursor.description[idx][0], value)
                 for idx, value in enumerate(row))
 
+
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
-    if query.startswith('INSERT') or query.startswith('UPDATE') or query.startswith('insert') or query.startswith('update'):
-        get_db().commit()
+    #if query.startswith('INSERT') or query.startswith('UPDATE') or query.startswith('insert') or query.startswith('update'):
+    get_db().commit()
     rv = [dict((cur.description[idx][0], value)
                for idx, value in enumerate(row)) for row in cur.fetchall()]
     print((rv[0] if rv else None) if one else rv)

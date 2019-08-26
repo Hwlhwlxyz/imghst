@@ -4,6 +4,7 @@ image hosting by flask
 ## Prerequisites
 pip3 install flask  
 pip3 install flask-login
+pip install Flask-Uploads
 
 ## Initializing database
 flask init-db   

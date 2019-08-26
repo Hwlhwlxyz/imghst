@@ -17,15 +17,15 @@ def index():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print(request.form)
+    #print(request.form)
     if request.method == "POST":
-        print(request.form["email"], request.form["password"])
+        #print(request.form["email"], request.form["password"])
         current_user = models.User.get_user_by_email(request.form["email"])
         if current_user.verify_password(request.form["password"]):
             login_user(current_user)
             flash('logged in successfully', "success")
             return redirect(url_for("dropzoneupload"))
-            print(current_user)
+            #print(current_user)
         else:
             flash("failed", "info")
 
@@ -66,12 +66,12 @@ def register():
         if existuser:
             flash("email has been used", "info")
         if verify(request.form["email"], request.form["password"], request.form["username"]):
-            print(request.form["email"], request.form["password"], request.form["username"])
+            #print(request.form["email"], request.form["password"], request.form["username"])
             newuser = models.User(request.form["username"], request.form["password"], request.form["email"])
             newuser.save()
             flash("registered successfully", "success")
         else:
-            print("failed")
+            #print("failed")
             flash("failed", "info")
     return render_template("register.html")
 
@@ -125,6 +125,21 @@ def get_images():
     data = models.Image.get_all()
     return jsonify(data)
 
+@app.route('/image/delete/<imgname>', methods=['GET'])
+def delete(imgname):
+    img = models.Image.find_by_name(imgname)
+    resp = img.delete()
+    return 'delete'+img.name
+
+@app.route('/image/updatename/<imgname>', methods=['POST'])
+def updatename(imgname):
+    newname = request.form["newname"]
+    if len(newname)<1:
+        return "error(invalid)"
+    img = models.Image.find_by_name(imgname)
+    resp = img.change_name(newname)
+    return "update image name from "+imgname+" to "+newname
+
 
 @app.route('/showimages')
 def show_images():
@@ -138,7 +153,7 @@ def show_images():
 def show_images_of_user():
 
     images = models.Image.get_img_by_userid(current_user.id)
-    print(images)
+    print("showimagesofuser:",images)
     return render_template('images.html', images=images)
 
 

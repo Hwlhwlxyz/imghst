@@ -2,13 +2,12 @@
 database
 '''
 import hmac
-import sqlite3
-from flask import g, config
+
 from flask_uploads import UploadSet, configure_uploads, IMAGES
-from flask import render_template, request
+
 from flask_login import UserMixin, LoginManager, login_manager
 
-import hashlib
+import os
 
 from app import app
 
@@ -53,8 +52,11 @@ class Image:
     @staticmethod
     def find_by_name(name):
         result = database.query_db('SELECT * FROM {} WHERE name=?'.format(Image.tablename), [name], one=True)
-        imageResult = Image(result['name'])
-        return imageResult
+        if result:
+            imageResult = Image(result['name'])
+            return imageResult
+        else:
+            return None
 
     @staticmethod
     def get_all():
@@ -69,7 +71,31 @@ class Image:
             img = f.read()
         return img
 
+    # TODO handle error
+    #newname without ext
+    def change_name(self, newname):
 
+        existfile = Image.find_by_name(newname)
+        file_name, file_extension = os.path.splitext(self.name)
+        full_newname = newname+file_extension
+        if (not existfile) or len(existfile)<1:
+            result = database.query_db('UPDATE {} set name=? WHERE name=?'.format(Image.tablename), (full_newname, self.name))
+            file_name, file_extension = os.path.splitext(self.name)
+            #change file name
+            print(newname+file_extension)
+            os.rename(os.path.join(app.config['UPLOADED_PHOTOS_DEST'],self.name), os.path.join(app.config['UPLOADED_PHOTOS_DEST'],full_newname))
+        else:
+            return "file name is already exist"
+        return result
+
+    #TODO handle error
+    def delete(self):
+        print(self.name, "delete~")
+
+        result = database.query_db('DELETE FROM {} WHERE name=?'.format(Image.tablename), [self.name])
+
+        os.remove(os.path.join(app.config['UPLOADED_PHOTOS_DEST'], self.name))
+        return result
 
 
 class User(UserMixin):
