@@ -3,8 +3,12 @@
 
 {% extends 'navigator.html' %}
 {% block body_part %}
+<link href="/static/css/images.css" rel="stylesheet" type="text/css"/>
 
     <body>
+
+
+    <div class="card-columns">
     {% for image in images %}
         {#        <img src="{{ url_for('return_img_stream', imgname=image['name']) }}" alt="{{ image['name'] }}"#}
         {#             height="200" width="200" class="img-responsive">#}
@@ -24,13 +28,14 @@
                         <label for="input-name">edit name</label>
                         <input type="text" required id="input-name" class="form-control" name="newname" placeholder="input new name">
                     </div>
-                    <button type="submit" class="btn btn-default">submit</button>
+                    <button type="submit" class="btn btn-primary">submit</button>
                 </form>
 
                 <a href="{{ url_for('delete', imgname=image['name']) }}" class="card-link">delete</a>
             </div>
         </div>
     {% endfor %}
+    </div>
     </body>
 
 
