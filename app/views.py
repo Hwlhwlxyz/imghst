@@ -126,19 +126,23 @@ def get_images():
     return jsonify(data)
 
 @app.route('/image/delete/<imgname>', methods=['GET'])
+@login_required
 def delete(imgname):
     img = models.Image.find_by_name(imgname)
     resp = img.delete()
     return 'delete'+img.name
 
 @app.route('/image/updatename/<imgname>', methods=['POST'])
+@login_required
 def updatename(imgname):
-    newname = request.form["newname"]
-    if len(newname)<1:
-        return "error(invalid)"
-    img = models.Image.find_by_name(imgname)
-    resp = img.change_name(newname)
-    return "update image name from "+imgname+" to "+newname
+    if request.method == 'POST':
+        newname = request.form["newname"]
+        if len(newname)<1:
+            return "error(invalid)"
+        img = models.Image.find_by_name(imgname)
+        resp = img.change_name(newname)
+        return "update image name from "+imgname+" to "+newname
+    return "UNKNOWN"
 
 
 @app.route('/showimages')
