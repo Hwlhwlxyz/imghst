@@ -130,7 +130,8 @@ def get_images():
 def delete(imgname):
     img = models.Image.find_by_name(imgname)
     resp = img.delete()
-    return 'delete'+img.name
+    return redirect(url_for('show_images_of_user'))
+    #return 'delete'+img.name
 
 @app.route('/image/updatename/<imgname>', methods=['POST'])
 @login_required
@@ -141,7 +142,8 @@ def updatename(imgname):
             return "error(invalid)"
         img = models.Image.find_by_name(imgname)
         resp = img.change_name(newname)
-        return "update image name from "+imgname+" to "+newname
+        return redirect(url_for('show_images_of_user'))
+        #return "update image name from "+imgname+" to "+newname
     return "UNKNOWN"
 
 
