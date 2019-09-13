@@ -52,15 +52,16 @@ class Image:
         size = Image.get_request_file_size(request_file_object)
         print("SIZE:", size)
         result = database.query_db('SELECT SUM(size) FROM {}'.format(Image.tablename))
-
+        print(result)
         size_of_exist_files = result[0]['SUM(size)']
         print("*" * 10)
         print(result, app.config['USAGE_OF_FLASK'], size_of_exist_files)
         print("*" * 10)
-        if size > app.config['USAGE_OF_FLASK'] - size_of_exist_files:
-            # TODO response
-            print("no space")
-            return False
+        if size_of_exist_files:
+            if size > app.config['USAGE_OF_FLASK'] - size_of_exist_files:
+                # TODO response
+                print("no space")
+                return False
         return True
 
     @staticmethod
