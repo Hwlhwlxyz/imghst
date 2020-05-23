@@ -23,10 +23,10 @@ session = requests.Session()
 
 r = session.post(loginurl, data={'email':email, 'password':password})
 print(r.status_code)
-
+if r.status_code==200:
+    print('login success')
 file ={
 'picture': open(localfile_path,'rb')
 }
 r = session.post(uploadurl, files=file)
 print(r.text)
-print(r.content)

@@ -103,7 +103,7 @@ def upload():
 
         result = {'filename':image_file.name, 'description':image_file.description}
         print('jsonify:',jsonify(filename=image_file.name, description=image_file.description))
-        return jsonify(filename=image_file.name, description=image_file.description)
+        return jsonify(filename=image_file.name, description=image_file.description, url=''.join([request.url_root,'image/',image_file.name]))
     return render_template('upload.html')
 
 
