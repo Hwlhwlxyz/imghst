@@ -20,8 +20,9 @@ configure_uploads(app, photos)
 class Image:
     tablename = 'image'
 
-    def __init__(self, name):
+    def __init__(self, name, description=None):
         self.name = name
+        self.description = description
         self.userid = None
 
     @staticmethod
@@ -32,6 +33,11 @@ class Image:
     @staticmethod
     def get_img_by_userid(userid):
         result = database.query_db('SELECT * FROM {} WHERE userid=?'.format(Image.tablename), [userid])
+        return result
+
+    @staticmethod
+    def get_img_by_userid_text(userid, text):
+        result = database.query_db("SELECT * FROM {} WHERE userid=? and description LIKE ?".format(Image.tablename), (userid, '%'+text+'%'))
         return result
 
     @staticmethod
@@ -86,7 +92,7 @@ class Image:
     def find_by_name(name):
         result = database.query_db('SELECT * FROM {} WHERE name=?'.format(Image.tablename), [name], one=True)
         if result:
-            imageResult = Image(result['name'])
+            imageResult = Image(result['name'],result['description'])
             return imageResult
         else:
             return None
@@ -104,7 +110,7 @@ class Image:
             img = f.read()
         return img
 
-    def checkfilename(self, full_newname):
+    def checkexistingfilename(self, full_newname):
         existfile = Image.find_by_name(full_newname)
         print('existfile:', existfile)
         if existfile:
@@ -117,7 +123,7 @@ class Image:
     def change_name(self, newname):
         file_name, file_extension = os.path.splitext(self.name)
         full_newname = newname + file_extension
-        if self.checkfilename(full_newname):
+        if self.checkexistingfilename(full_newname):
             result = database.query_db('UPDATE {} set name=? WHERE name=?'.format(Image.tablename),
                                        (full_newname, self.name))
             file_name, file_extension = os.path.splitext(self.name)
@@ -125,9 +131,21 @@ class Image:
             print(newname + file_extension)
             os.rename(os.path.join(app.config['UPLOADED_PHOTOS_DEST'], self.name),
                       os.path.join(app.config['UPLOADED_PHOTOS_DEST'], full_newname))
+            return True #success
         else:
-            return "upload failed"
-        return result
+            return False #unsuccess
+
+
+
+    def change_description(self, newdescription):
+        file_name, file_extension = os.path.splitext(self.name)
+        result = database.query_db('UPDATE {} set description=? WHERE name=?'.format(Image.tablename),
+                                   (newdescription, self.name))
+        print('change_description: ', result)
+        return True
+
+
+
 
     # TODO handle error
     def delete(self):

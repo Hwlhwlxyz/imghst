@@ -9,7 +9,7 @@ CREATE TABLE image (
   name TEXT UNIQUE NOT NULL,
   size INT,
   userid INT,
-  describe TEXT,
+  description TEXT,
   time timestamp not null default CURRENT_TIMESTAMP
 );
 

@@ -17,7 +17,7 @@ def index():
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    #print(request.form)
+    print(request.form)
     if request.method == "POST":
         #print(request.form["email"], request.form["password"])
         current_user = models.User.get_user_by_email(request.form["email"])
@@ -70,6 +70,7 @@ def register():
             newuser = models.User(request.form["username"], request.form["password"], request.form["email"])
             newuser.save()
             flash("registered successfully", "success")
+            return redirect(url_for("login"))
         else:
             #print("failed")
             flash("failed", "info")
@@ -88,29 +89,31 @@ def logout():
 
 ###
 
-# @app.route('/upload', methods=['POST', 'GET'])
-# def upload():
-#     if request.method == 'POST' and 'photo' in request.files:
-#         filename = models.Image.save(request.files['photo'], current_user.get_id())
-#         print("uploading:",filename)
-#     return render_template('upload.html')
+# upload api
+@app.route('/api/upload', methods=['POST','GET'])
+@login_required
+def upload():
+    if request.method == 'POST' and 'picture' in request.files:
+        filename = models.Image.save(request.files['picture'], current_user.get_id())
+        image_file = models.Image.find_by_name(filename)
+        print('image_file:',image_file)
+        print(request)
+
+        image_file = models.Image.find_by_name(filename)
+
+        result = {'filename':image_file.name, 'description':image_file.description}
+        print('jsonify:',jsonify(filename=image_file.name, description=image_file.description))
+        return jsonify(filename=image_file.name, description=image_file.description)
+    return render_template('upload.html')
 
 
 
 @app.route('/uploadbydropzone', methods=['POST', 'GET'])
 @login_required
 def dropzoneupload():
-    print(request.files, request.method)
     if request.method == 'POST':
-        print("dropzoneupload:", request.files, request.method)
-        print("dropzoneupload_files:",request.files.getlist("file[0]"))
-
         for fnumber, f in request.files.items():
-            print(f)
-            print("name:",f.filename)
-            print("*"*10)
             models.Image.save(f, current_user.get_id())
-
     return render_template('dropzone.html')
 
 
@@ -120,10 +123,6 @@ def return_img_stream(imgname):
     return resp
 
 
-@app.route('/image')
-def get_images():
-    data = models.Image.get_all()
-    return jsonify(data)
 
 @app.route('/image/delete/<imgname>', methods=['GET'])
 @login_required
@@ -131,7 +130,6 @@ def delete(imgname):
     img = models.Image.find_by_name(imgname)
     resp = img.delete()
     return redirect(url_for('show_images_of_user'))
-    #return 'delete'+img.name
 
 @app.route('/image/updatename/<imgname>', methods=['POST'])
 @login_required
@@ -141,27 +139,59 @@ def updatename(imgname):
         if len(newname)<1:
             return "error(invalid)"
         img = models.Image.find_by_name(imgname)
-        resp = img.change_name(newname)
-        return redirect(url_for('show_images_of_user'))
-        #return "update image name from "+imgname+" to "+newname
+        response = img.change_name(newname)
+        if response:
+            return redirect(url_for('show_images_of_user'))
+        else:
+            #update failed
+            flash("rename failed","error")
     return "UNKNOWN"
 
 
+@app.route('/image/updatedescription/<imgname>', methods=['POST'])
+@login_required
+def updatedescription(imgname):
+    if request.method == 'POST':
+        newdescription = request.form["newdescription"].strip()
+        if len(newdescription)<1:
+            return "error(invalid)"
+        img = models.Image.find_by_name(imgname)
+        response = img.change_description(newdescription)
+        if response:
+            return redirect(url_for('show_images_of_user'))
+        else:
+            #update failed
+            flash("rename failed","error")
+    return "UNKNOWN"
+
+# show all images
+# @app.route('/showimages')
+# def show_images():
+#     images = models.Image.get_all()
+#     print(images)
+#     return render_template('images.html', images=images)
+
+
 @app.route('/showimages')
-def show_images():
-    images = models.Image.get_all()
-    print(images)
-    return render_template('images.html', images=images)
-
-
-@app.route('/showimagesofuser')
 @login_required
 def show_images_of_user():
-
     images = models.Image.get_img_by_userid(current_user.id)
-    print("showimagesofuser:",images)
     return render_template('images.html', images=images)
 
+
+@app.route('/showimages/search', methods=['POST','GET'])
+@login_required
+def show_searched_images_of_user():
+    if request.method == 'POST':
+        text = request.form["search_text"].strip()
+        text = text.strip()
+        images = []
+        if len(text)>0:
+            images = models.Image.get_img_by_userid_text(current_user.id,text)
+            return render_template('images.html', images=images)
+        else:
+            return redirect(url_for('show_images_of_user'))
+        return redirect(url_for('show_images_of_user'))
 
 @app.route('/about')
 def about():
